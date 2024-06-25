@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0; /* Light grey background */
+        }
+        form {
+            display: none;
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333; /* Dark grey text */
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555; /* Dark grey text for labels */
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #4CAF50; /* Green border on focus */
+        }
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Green background */
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+    </style>
+</head>
+<body>
+    <h1>User Authentication</h1>
+    <button onclick="showSignupForm()">Signup</button>
+    <button onclick="showLoginForm()">Login</button>
+ 
+    <!-- Signup Form -->
+    <form id="signupForm" onsubmit="signup(event)">
+        <h2>Signup Form</h2>
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required minlength="2" maxlength="50">
+       
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required minlength="2" maxlength="50">
+       
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+       
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required pattern="[0-9]{10,}">
+       
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required minlength="6">
+       
+        <label for="qualification">Qualification:</label>
+        <select id="qualification" name="qualification" required>
+            <option value="">Select Qualification</option>
+            <option value="High School">High School</option>
+            <option value="Bachelor's Degree">Bachelor's Degree</option>
+            <option value="Master's Degree">Master's Degree</option>
+            <option value="PhD">PhD</option>
+            <option value="Other">Other</option>
+        </select>
+       
+        <button type="submit">Signup</button>
+    </form>
+ 
+    <!-- Login Form -->
+    <form id="loginForm" style="display:none;" onsubmit="login(event)">
+        <h2>Login Form</h2>
+        <label for="loginEmail">Email:</label>
+        <input type="email" id="loginEmail" name="loginEmail" required>
+       
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" name="loginPassword" required>
+       
+        <button type="submit">Login</button>
+    </form>
+ 
+    <script>
+        function showSignupForm() {
+            document.getElementById("signupForm").style.display = "block";
+            document.getElementById("loginForm").style.display = "none";
+        }
+ 
+        function showLoginForm() {
+            document.getElementById("signupForm").style.display = "none";
+            document.getElementById("loginForm").style.display = "block";
+        }
+ 
+        async function signup(event) {
+            event.preventDefault();
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const qualification = document.getElementById('qualification').value;
+ 
+            const response = await fetch('http://localhost:8000/signup/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    phone: phone,
+                    password: password,
+                    qualification: qualification
+                })
+            });
+ 
+            if (response.ok) {
+                alert('Signup successful');
+            } else {
+                alert('Signup failed');
+            }
+        }
+ 
+        // Example of login request using fetch
+        const login = async (event) => {
+            event.preventDefault();  // Prevent form submission
+ 
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+ 
+            try {
+                const response = await fetch('http://localhost:8000/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+ 
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+ 
+                const data = await response.json();
+ 
+                if (data.message === 'Login successful') {
+                    alert('Login successful');  // Replace with your handling for successful login
+                    // Example: Redirect to another page or update UI
+                } else {
+                    throw new Error('Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error.message);
+                alert('Login failed');  // Display an error message for unsuccessful login
+            }
+        };
+ 
+        // Attach the login function to the login form submission
+        document.getElementById('loginForm').addEventListener('submit', login);
+    </script>
+</body>
+</html>
