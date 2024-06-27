@@ -28,7 +28,9 @@
         }
         input[type="text"],
         input[type="email"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="tel"],
+        select {
             width: calc(100% - 20px);
             padding: 10px;
             margin-bottom: 15px;
@@ -39,18 +41,11 @@
         }
         input[type="text"]:focus,
         input[type="email"]:focus,
-        input[type="password"]:focus {
+        input[type="password"]:focus,
+        input[type="tel"]:focus,
+        select:focus {
             outline: none;
             border-color: #4CAF50; /* Green border on focus */
-        }
-        select {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            box-sizing: border-box;
         }
         button {
             padding: 10px 20px;
@@ -136,6 +131,13 @@
             const password = document.getElementById('password').value;
             const qualification = document.getElementById('qualification').value;
  
+            // Validate password
+            if (!validatePassword(password)) {
+                alert('Password must be at least 6 characters long, include at least one uppercase letter, one lowercase letter, and one special character.');
+                return;
+            }
+ 
+            // Proceed with signup if password is valid
             const response = await fetch('http://localhost:8000/signup/', {
                 method: 'POST',
                 headers: {
@@ -156,6 +158,13 @@
             } else {
                 alert('Signup failed');
             }
+        }
+ 
+        // Function to validate password
+        function validatePassword(password) {
+            // Password must be at least 6 characters long, include one uppercase, one lowercase, and one special character
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+            return passwordRegex.test(password);
         }
  
         // Example of login request using fetch
